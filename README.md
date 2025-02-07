@@ -5,7 +5,7 @@ Cron like application to schedule process that runs in background made easy
 ## Installation
 
 ```bash
-go install github.com/Drafteames/scheduler@latest
+go install github.com/Drafteame/scheduler@latest
 ```
 
 ## Usage
