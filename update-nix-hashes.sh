@@ -61,7 +61,7 @@ log_debug "New hash computed: $NEW_HASH"
 
 # Update the hash in the flake
 log_info "Updating flake.nix with new vendor hash"
-sd "vendorHash = \"\"" "vendorHash = \"$NEW_HASH\"/" flake.nix
+sd "vendorHash = \"\"" "vendorHash = \"$NEW_HASH\"" flake.nix
 
 # Clean up
 log_debug "Removing backup file"
