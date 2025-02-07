@@ -47,7 +47,7 @@ jobs:
       - name: Get version
         id: version
         run: |
-          version=$(cz bump --dry-run --no-verify | grep tag | sed 's/tag to create: v//')
+          version=$(cz bump --dry-run --yes --no-verify | grep tag | sed 's/tag to create: v//')
           echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Set up sd
