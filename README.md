@@ -28,7 +28,8 @@ Also, you can specify the path to the configuration file using the `--config` fl
 
 ```bash
 scheduler --config /path/to/config.yml
-# of
+
+# short
 scheduler -c /path/to/config.yml
 ```
 
