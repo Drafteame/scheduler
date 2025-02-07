@@ -1,0 +1,109 @@
+name: Relese
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  GIT_USER_EMAIL: ${{ secrets.GIT_EMAIL }}
+  GIT_USER_NAME: ${{ secrets.GIT_NAME }}
+
+permissions:
+  contents: write
+
+jobs:
+  bump_version:
+    if: "!startsWith(github.event.head_commit.message, 'bump:') && !startsWith(github.event.head_commit.message, 'ci:')"
+    runs-on: ubuntu-22.04
+    name: "Bump version"
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.ACCESS_TOKEN }}"
+          ref: "main"
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v25
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+
+      - name: Config Git User
+        run: |
+          git config --local user.email "$GIT_USER_EMAIL"
+          git config --local user.name "$GIT_USER_NAME"
+          git config --local pull.ff only
+
+      - name: Install commitizen
+        run: pip install -U commitizen
+
+      - name: Get version
+        id: version
+        run: |
+          version=$(cz bump --dry-run --no-verify | grep tag | sed 's/tag to create: v//')
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Set up sd
+        uses: kenji-miyake/setup-sd@v2
+
+      - name: Update vendor hash
+        run: bash update-nix-hashes.sh "${{ steps.version.outputs.version }}"
+
+      - name: Commit vendor hash update
+        run: |
+          git config --local user.email "${{ env.GIT_USER_EMAIL }}"
+          git config --local user.name "${{ env.GIT_USER_NAME }}"
+          git add flake.nix
+          git commit -m "chore(ci): update vendor hash for version ${{ steps.version.outputs.version }}"
+
+      - name: Create bump and changelog
+        id: bump
+        run: |
+          cz bump --changelog --yes --no-verify
+          export REV=`cz version --project`
+          echo "version=$REV" >> $GITHUB_OUTPUT
+
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          github_token: ${{ secrets.ACCESS_TOKEN }}
+          repository: ${{ github.repository }}
+          branch: 'main'
+          directory: .
+          tags: true
+
+      - name: Print Version
+        run: echo "Bumped to version ${{ steps.bump.outputs.version }}"
+
+  release:
+    runs-on: ubuntu-22.04
+    name: "Release service"
+    needs:
+      - bump_version
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.ACCESS_TOKEN }}"
+          ref: "main"
+
+      - name: Setup Golang
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.23
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_RELEASE_WEBHOOK }}

@@ -1,0 +1,36 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - main: main.go
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - "-X 'github.com/Drafteame/scheduler/cmd/commands.Version={{.Version}}'"
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - name_template: >-
+      {{ .ProjectName }}_{{ .Os }}_{{ .Arch }}_{{ .Version }}
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'

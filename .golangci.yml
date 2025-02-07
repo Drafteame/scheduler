@@ -1,0 +1,39 @@
+run:
+  go: '1.23'
+  concurrency: 4
+
+linters:
+  disable-all: true
+
+  enable:
+    - bodyclose
+    - copyloopvar
+    - dupl
+    - errcheck
+    - errchkjson
+    - errname
+    - errorlint
+    - exhaustive
+    - exptostd
+    - fatcontext
+    - funlen
+    - gocognit
+    - gocritic
+    - gosec
+    - gosimple
+    - govet
+    - misspell
+    - nestif
+    - paralleltest
+    - staticcheck
+    - stylecheck
+    - tagalign
+    - testifylint
+    - thelper
+    - tparallel
+    - unused
+    - usestdlibvars
+    - varnamelen
+    - whitespace
+
+  fast: true

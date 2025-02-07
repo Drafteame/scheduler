@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+. "$(dirname "$0")/_/husky.sh"
+
+if [ "$GIT_NV" = "1" ]; then
+  echo "[husky] skipping pre-commit hooks because variable GIT_NV is set to 1"
+  exit 0
+fi
+
+sh ./.husky/pre-commit-scripts/go-mod-tidy.sh && \
+sh ./.husky/pre-commit-scripts/format.sh && \
+sh ./.husky/pre-commit-scripts/lint.sh
+
+if [ $? -ne 0 ]; then
+  echo "[husky] commit validation error"
+  exit 1
+fi
