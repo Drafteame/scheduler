@@ -1,3 +1,3 @@
 package commands
 
-var Version = "development"
+var Version = "dev-0.0.1"
