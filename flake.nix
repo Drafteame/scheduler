@@ -10,7 +10,7 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        draftVersion = "0.0.0";
+        draftVersion = "0.0.1";
       in
       {
         packages.default = pkgs.buildGoModule {
@@ -30,7 +30,7 @@
           env.CGO_ENABLED = false;
           env.GOWORK = "off";
 
-          vendorHash = "";
+          vendorHash = "sha256-c9P5saj5LMY6cYnPDtkl9PlV5iVSDJdQBN4KCQ7pTXg=";
 
           meta = with pkgs.lib; {
             description = "Cron like application to schedule process that runs in background";
