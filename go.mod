@@ -3,7 +3,7 @@ module github.com/Drafteame/scheduler
 go 1.23
 
 require (
-	github.com/adhocore/gronx v1.19.5
+	github.com/adhocore/gronx v1.19.6
 	github.com/briandowns/spinner v1.23.2
 	github.com/charmbracelet/lipgloss v1.0.0
 	github.com/spf13/cobra v1.8.1
